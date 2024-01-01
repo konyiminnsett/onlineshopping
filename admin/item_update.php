@@ -10,7 +10,7 @@ $category_id=$_POST['category_id'];
 $photo=$_FILES['photo']['name'];
 $tmp=$_FILES['photo']['tmp_name'];
 $expired_date=date('Y-m-d H:i:s',strtotime("+3 months",strtotime("now")));
-if ($photo){
+if($photo){
     move_uploaded_file($tmp,"images/$photo");
     $sql = "UPDATE all_items SET title='$title',brand='$brand',review='$review',price='$price',photo='$photo',category_id='$category_id',reached_date=now(),expired_date='$expired_date' WHERE id='$id'";
 

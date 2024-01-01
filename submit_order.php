@@ -1,50 +1,66 @@
 <?php
-
 session_start();
-include ("admin/confs/config.php");
-$name=$_POST['name'];
-$email=$_POST['email'];
-$phone=$_POST['phone'];
-$visa=$_POST['visa'];
-$address=$_POST['address'];
-$received=date('Y-m-d H:m:s',strtotime('+7days',strtotime('now')));
-mysqli_query($conn,"INSERT INTO orders(name,email,phone,visa_card,address,status,ordered_date,received_date) VALUES ('$name','$email','$phone','$visa','$address',0,now(),'$received')");
-$order_id=mysqli_insert_id($conn);
-foreach ($_SESSION['cart'] as $id=>$qty){
-    mysqli_query($conn,"INSERT INTO order_items(item_id,order_id,qty) VALUES($id,$order_id,$qty) ");
-}
+include("admin/confs/config.php");
 
-unset($_SESSION['cart']);
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $name = $_POST['name'];
+    $email = $_POST['email'];
+    $phone = $_POST['phone'];
+    $visa = $_POST['visa'];
+    $address = $_POST['address'];
+    $received = date('Y-m-d H:i:s', strtotime('+7 days', strtotime('now')));
+
+    $insertOrderQuery = "INSERT INTO orders (name, email, phone, visa_card, address, status, ordered_date, received_date) VALUES ('$name', '$email', '$phone', '$visa', '$address', 0, NOW(), '$received')";
+    mysqli_query($conn, $insertOrderQuery);
+
+    $order_id = mysqli_insert_id($conn);
+
+    foreach ($_SESSION['cart'] as $id => $qty) {
+        $insertOrderItemsQuery = "INSERT INTO order_items (item_id, order_id, qty) VALUES ($id, $order_id, $qty)";
+        mysqli_query($conn, $insertOrderItemsQuery);
+    }
+
+    unset($_SESSION['cart']);
+}
 ?>
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Order Submitted</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-image: linear-gradient(to right, rgb(116, 235, 213), rgb(172, 182, 229));
+        }
+    </style>
 </head>
+
 <body>
-<h1>Order Submitted</h1>
-<div class="msg">
-    Your order is submitted.We will deliever the items soon.
-    <a href="index.php">Online Shop Home</a>
-</div>
-<div class="footer">
-    &copy;<?php echo date('Y'); ?>.All Right Reserved.
-</div>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h1 class="text-center">Order Submitted</h1>
+                    </div>
+                    <div class="card-body text-center">
+                        <p>Your order has been submitted. We will deliver the items soon.</p>
+                        <a href="index.php" class="btn btn-primary">Online Shop Home</a>
+                    </div>
+                    <div class="card-footer text-muted">
+                        &copy;<?php echo date('Y'); ?>. All Rights Reserved.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    
 </body>
+
 </html>
-
-
-
-
-
-
-
-
-
-?>
